@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>أج آجمار – صانع صور الأخبار</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;800&display=swap" rel="stylesheet">
+
+<style>
+body{
+  background:#111;
+  color:#fff;
+  font-family:'Cairo',sans-serif;
+  text-align:center;
+}
+header{
+  background:#1877f2;
+  padding:12px;
+  font-size:22px;
+  font-weight:800;
+}
+canvas{
+  margin-top:10px;
+  border-radius:12px;
+}
+.controls{
+  padding:10px;
+}
+input,textarea,button{
+  margin:5px;
+  padding:8px;
+  border-radius:6px;
+  border:none;
+  width:90%;
+  max-width:400px;
+}
+button{
+  background:#2e7d32;
+  color:#fff;
+  font-weight:bold;
+}
+label{
+  font-size:13px;
+  opacity:0.8;
+}
+</style>
+</head>
+
+<body>
+
+<header>ⓕ صانع صور الأخبار</header>
+
+<canvas id="c" width="600" height="800"></canvas>
+
+<div class="controls">
+
+  <label>صورة الخبر</label><br>
+  <input type="file" id="bgImg"><br>
+
+  <label>شعار الصفحة</label><br>
+  <input type="file" id="logoImg"><br>
+
+  <label>اسم الصفحة</label><br>
+  <input type="text" id="pageName" value="أج آجمار"><br>
+
+  <label>عنوان الخبر (قصير)</label><br>
+  <input type="text" id="newsTitle" value="الأخبار"><br>
+
+  <label>لون شريط الخبر</label><br>
+  <input type="color" id="barColor" value="#1b5e20"><br>
+
+  <label>نص الخبر</label><br>
+  <textarea id="news" rows="3">لا زيادة في جمركة الهواتف والتحويلات الأدنى إقليميا</textarea><br>
+
+  <button onclick="exportImage()">📥 تحميل الصورة</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+<script>
+const canvas = new fabric.Canvas('c');
+
+let pageGroup, pageText, fbIcon;
+let logoImgObj;
+let titleBox, titleText;
+let newsBox, newsText;
+
+/* ===== فيسبوك + اسم الصفحة ===== */
+fabric.loadSVGFromURL(
+  "https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg",
+  (objects, options) => {
+    fbIcon = fabric.util.groupSVGElements(objects, options);
+    fbIcon.scaleToWidth(16);
+
+    pageText = new fabric.Text("أج آجمار",{
+      fontSize:22,
+      fill:'#ffffff',
+      fontWeight:'bold',
+      left:22,
+      top:0
+    });
+
+    pageGroup = new fabric.Group([fbIcon, pageText],{
+      left:20,
+      top:20
+    });
+
+    canvas.add(pageGroup);
+  }
+);
+
+document.getElementById('pageName').oninput = e=>{
+  pageText.text = e.target.value;
+  canvas.renderAll();
+};
+
+/* ===== صورة الخلفية ===== */
+document.getElementById('bgImg').onchange = e=>{
+  const r=new FileReader();
+  r.onload=()=>{
+    fabric.Image.fromURL(r.result,img=>{
+      img.scaleToWidth(600);
+      canvas.setBackgroundImage(img,canvas.renderAll.bind(canvas));
+    });
+  };
+  r.readAsDataURL(e.target.files[0]);
+};
+
+/* ===== شعار الصفحة ===== */
+document.getElementById('logoImg').onchange = e=>{
+  const r=new FileReader();
+  r.onload=()=>{
+    fabric.Image.fromURL(r.result,img=>{
+      img.scaleToWidth(60);
+      img.set({
+        left:520,
+        top:20,
+        clipPath:new fabric.Circle({
+          radius:30,
+          originX:'center',
+          originY:'center'
+        })
+      });
+      if(logoImgObj) canvas.remove(logoImgObj);
+      logoImgObj=img;
+      canvas.add(img);
+    });
+  };
+  r.readAsDataURL(e.target.files[0]);
+};
+
+/* ===== عنوان الخبر ===== */
+document.getElementById('newsTitle').oninput = drawNews;
+document.getElementById('news').oninput = drawNews;
+document.getElementById('barColor').oninput = drawNews;
+
+function drawNews(){
+  if(titleBox) canvas.remove(titleBox);
+  if(titleText) canvas.remove(titleText);
+  if(newsBox) canvas.remove(newsBox);
+  if(newsText) canvas.remove(newsText);
+
+  const color = document.getElementById('barColor').value;
+
+  titleBox = new fabric.Rect({
+    left:20,
+    top:610,
+    width:200,
+    height:35,
+    fill:'#ffffff',
+    rx:6,
+    ry:6
+  });
+
+  titleText = new fabric.Text(
+    document.getElementById('newsTitle').value,{
+    left:30,
+    top:617,
+    fontSize:18,
+    fill:color,
+    fontWeight:'bold'
+  });
+
+  newsBox = new fabric.Rect({
+    left:0,
+    top:650,
+    width:600,
+    height:130,
+    fill:color,
+    shadow:'rgba(0,0,0,0.4) 0px -3px 10px'
+  });
+
+  newsText = new fabric.Textbox(
+    document.getElementById('news').value,{
+    left:20,
+    top:675,
+    width:560,
+    fontSize:26,
+    fill:'#fff',
+    fontWeight:'bold'
+  });
+
+  canvas.add(titleBox, titleText, newsBox, newsText);
+}
+
+/* ===== تصدير ===== */
+function exportImage(){
+  const a=document.createElement('a');
+  a.download="news-image.png";
+  a.href=canvas.toDataURL({multiplier:2});
+  a.click();
+}
+</script>
+
+</body>
+</html>
