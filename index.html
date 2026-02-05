@@ -4,9 +4,654 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نظام إدارة المحظرة الموريتانية</title>
-    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* تنسيقات CSS الكاملة */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            direction: rtl;
+        }
+
+        .navbar {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            box-shadow: var(--box-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .current-date {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+            align-self: flex-start;
+        }
+
+        .main-content {
+            padding: 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .page-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .page-header h2 {
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem;
+        }
+
+        .card-header h3 {
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+            text-align: center;
+        }
+
+        .stat-number span {
+            font-size: 1rem;
+            color: #777;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-family: inherit;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #219653;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        .students-list {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+        }
+
+        .student-item {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .student-item:last-child {
+            border-bottom: none;
+        }
+
+        .student-info h4 {
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .student-details {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .student-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .payment-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .payment-status.paid {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .payment-status.unpaid {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .payment-status.overdue {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .search-box {
+            position: relative;
+            flex-grow: 1;
+            max-width: 300px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 2.5rem 0.75rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-family: inherit;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777;
+        }
+
+        .filters {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            background-color: #eee;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .filter-btn.active {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .payments-list {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+        }
+
+        .payment-item {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .payment-item.overdue {
+            background-color: #fff8f8;
+        }
+
+        .payment-info h4 {
+            margin-bottom: 0.5rem;
+        }
+
+        .payment-details {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-size: 0.9rem;
+        }
+
+        .payment-amount {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .attendance-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .attendance-list {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+        }
+
+        .attendance-item {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .attendance-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .attendance-status.present {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .attendance-status.absent {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: var(--border-radius);
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #777;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #ddd;
+        }
+
+        .empty-state p {
+            margin-bottom: 1.5rem;
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 1rem;
+            left: 1rem;
+            right: 1rem;
+            background-color: var(--success-color);
+            color: white;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            z-index: 3000;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .notification.active {
+            display: flex;
+            animation: slideUp 0.3s ease;
+        }
+
+        .notification.error {
+            background-color: var(--danger-color);
+        }
+
+        .notification.warning {
+            background-color: var(--warning-color);
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .recent-activity, .alerts-section {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .recent-activity h3, .alerts-section h3 {
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .activity-list, .alerts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .activity-item, .alert-item {
+            padding: 1rem;
+            background-color: #f9f9f9;
+            border-radius: var(--border-radius);
+            border-right: 4px solid var(--secondary-color);
+        }
+
+        .alert-item.warning {
+            border-right-color: var(--warning-color);
+        }
+
+        .alert-item.danger {
+            border-right-color: var(--danger-color);
+        }
+
+        .confirm-modal {
+            max-width: 400px;
+        }
+
+        .total-amount, .attendance-date {
+            background-color: #f8f9fa;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: bold;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .stats-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box {
+                max-width: 100%;
+            }
+            
+            .student-item, .payment-item, .attendance-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .student-actions, .payment-actions {
+                align-self: flex-end;
+            }
+            
+            .attendance-controls {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-links {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .nav-link {
+                justify-content: center;
+            }
+            
+            .filters {
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- شريط التنقل -->
@@ -14,7 +659,7 @@
         <div class="nav-container">
             <h1 class="logo"><i class="fas fa-mosque"></i> نظام إدارة المحظرة</h1>
             <div class="nav-links">
-                <a href="#" class="nav-link" data-page="dashboard"><i class="fas fa-home"></i> لوحة التحكم</a>
+                <a href="#" class="nav-link active" data-page="dashboard"><i class="fas fa-home"></i> لوحة التحكم</a>
                 <a href="#" class="nav-link" data-page="students"><i class="fas fa-users"></i> التلاميذ</a>
                 <a href="#" class="nav-link" data-page="payments"><i class="fas fa-money-bill-wave"></i> المدفوعات</a>
                 <a href="#" class="nav-link" data-page="attendance"><i class="fas fa-clipboard-check"></i> الحضور</a>
@@ -103,7 +748,6 @@
             </div>
             
             <div class="students-list" id="studentsList">
-                <!-- سيتم ملؤها بالجافاسكريبت -->
                 <div class="empty-state">
                     <i class="fas fa-users-slash"></i>
                     <p>لا يوجد تلاميذ مسجلين بعد</p>
@@ -271,1676 +915,1036 @@
     <!-- رسائل التنبيه -->
     <div id="notification" class="notification"></div>
 
-    <script src="script.js"></script>
-</body>
-</html>
-/* التنسيقات العامة */
-:root {
-    --primary-color: #2c3e50;
-    --secondary-color: #3498db;
-    --success-color: #27ae60;
-    --danger-color: #e74c3c;
-    --warning-color: #f39c12;
-    --light-color: #ecf0f1;
-    --dark-color: #2c3e50;
-    --border-radius: 8px;
-    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --transition: all 0.3s ease;
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Noto Sans Arabic', sans-serif;
-    background-color: #f5f7fa;
-    color: #333;
-    line-height: 1.6;
-    direction: rtl;
-}
-
-/* شريط التنقل */
-.navbar {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 1rem;
-    box-shadow: var(--box-shadow);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-}
-
-.nav-container {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.logo {
-    font-size: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.nav-links {
-    display: flex;
-    gap: 1rem;
-    overflow-x: auto;
-    padding-bottom: 5px;
-}
-
-.nav-link {
-    color: white;
-    text-decoration: none;
-    padding: 0.5rem 1rem;
-    border-radius: var(--border-radius);
-    transition: var(--transition);
-    white-space: nowrap;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.nav-link:hover, .nav-link.active {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-.current-date {
-    background-color: rgba(255, 255, 255, 0.1);
-    padding: 0.5rem 1rem;
-    border-radius: var(--border-radius);
-    font-size: 0.9rem;
-    align-self: flex-start;
-}
-
-/* المحتوى الرئيسي */
-.main-content {
-    padding: 1rem;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.page {
-    display: none;
-}
-
-.page.active {
-    display: block;
-    animation: fadeIn 0.5s ease;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-.page-header {
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #ddd;
-}
-
-.page-header h2 {
-    color: var(--primary-color);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 0.5rem;
-}
-
-.header-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    align-items: center;
-    margin-top: 1rem;
-}
-
-/* البطاقات */
-.stats-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-}
-
-.card {
-    background-color: white;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    overflow: hidden;
-    transition: var(--transition);
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-}
-
-.card-header {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 1rem;
-}
-
-.card-header h3 {
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.card-body {
-    padding: 1.5rem;
-}
-
-.stat-number {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: var(--secondary-color);
-    text-align: center;
-}
-
-.stat-number span {
-    font-size: 1rem;
-    color: #777;
-}
-
-/* الأزرار */
-.btn {
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: var(--border-radius);
-    font-family: inherit;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: var(--transition);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.btn-primary {
-    background-color: var(--secondary-color);
-    color: white;
-}
-
-.btn-primary:hover {
-    background-color: #2980b9;
-}
-
-.btn-success {
-    background-color: var(--success-color);
-    color: white;
-}
-
-.btn-success:hover {
-    background-color: #219653;
-}
-
-.btn-danger {
-    background-color: var(--danger-color);
-    color: white;
-}
-
-.btn-danger:hover {
-    background-color: #c0392b;
-}
-
-.btn-secondary {
-    background-color: #95a5a6;
-    color: white;
-}
-
-.btn-secondary:hover {
-    background-color: #7f8c8d;
-}
-
-/* قائمة التلاميذ */
-.students-list {
-    background-color: white;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    overflow: hidden;
-}
-
-.student-item {
-    padding: 1rem;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.student-item:last-child {
-    border-bottom: none;
-}
-
-.student-info h4 {
-    margin-bottom: 0.5rem;
-    color: var(--primary-color);
-}
-
-.student-details {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-    font-size: 0.9rem;
-    color: #666;
-}
-
-.student-actions {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.payment-status {
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: bold;
-}
-
-.payment-status.paid {
-    background-color: #d4edda;
-    color: #155724;
-}
-
-.payment-status.unpaid {
-    background-color: #f8d7da;
-    color: #721c24;
-}
-
-.payment-status.overdue {
-    background-color: #fff3cd;
-    color: #856404;
-}
-
-/* مربع البحث */
-.search-box {
-    position: relative;
-    flex-grow: 1;
-    max-width: 300px;
-}
-
-.search-box input {
-    width: 100%;
-    padding: 0.75rem 2.5rem 0.75rem 1rem;
-    border: 1px solid #ddd;
-    border-radius: var(--border-radius);
-    font-family: inherit;
-}
-
-.search-box i {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #777;
-}
-
-/* الفلاتر */
-.filters {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-}
-
-.filter-btn {
-    padding: 0.5rem 1rem;
-    background-color: #eee;
-    border: none;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.filter-btn.active {
-    background-color: var(--secondary-color);
-    color: white;
-}
-
-/* قائمة المدفوعات */
-.payments-list {
-    background-color: white;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    overflow: hidden;
-}
-
-.payment-item {
-    padding: 1rem;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.payment-item.overdue {
-    background-color: #fff8f8;
-}
-
-.payment-info h4 {
-    margin-bottom: 0.5rem;
-}
-
-.payment-details {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-    font-size: 0.9rem;
-}
-
-.payment-amount {
-    font-weight: bold;
-    font-size: 1.2rem;
-}
-
-/* الحضور */
-.attendance-controls {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-}
-
-.attendance-list {
-    background-color: white;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    overflow: hidden;
-}
-
-.attendance-item {
-    padding: 1rem;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.attendance-status {
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: bold;
-}
-
-.attendance-status.present {
-    background-color: #d4edda;
-    color: #155724;
-}
-
-.attendance-status.absent {
-    background-color: #f8d7da;
-    color: #721c24;
-}
-
-/* النافذة المنبثقة */
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 2000;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-}
-
-.modal.active {
-    display: flex;
-}
-
-.modal-content {
-    background-color: white;
-    border-radius: var(--border-radius);
-    width: 100%;
-    max-width: 500px;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-
-.modal-header {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.close-btn {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 1.5rem;
-    cursor: pointer;
-    line-height: 1;
-}
-
-.modal-body {
-    padding: 1.5rem;
-}
-
-/* النماذج */
-.form-group {
-    margin-bottom: 1.5rem;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-    color: var(--primary-color);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.form-group input,
-.form-group textarea,
-.form-group select {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #ddd;
-    border-radius: var(--border-radius);
-    font-family: inherit;
-    font-size: 1rem;
-}
-
-.form-group textarea {
-    resize: vertical;
-    min-height: 80px;
-}
-
-.form-actions {
-    display: flex;
-    gap: 1rem;
-    justify-content: flex-end;
-    margin-top: 2rem;
-}
-
-/* الحالة الفارغة */
-.empty-state {
-    text-align: center;
-    padding: 3rem 1rem;
-    color: #777;
-}
-
-.empty-state i {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    color: #ddd;
-}
-
-.empty-state p {
-    margin-bottom: 1.5rem;
-}
-
-/* الإشعارات */
-.notification {
-    position: fixed;
-    bottom: 1rem;
-    left: 1rem;
-    right: 1rem;
-    background-color: var(--success-color);
-    color: white;
-    padding: 1rem;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    z-index: 3000;
-    display: none;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.notification.active {
-    display: flex;
-    animation: slideUp 0.3s ease;
-}
-
-.notification.error {
-    background-color: var(--danger-color);
-}
-
-.notification.warning {
-    background-color: var(--warning-color);
-}
-
-@keyframes slideUp {
-    from { transform: translateY(100%); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-/* النشاطات الأخيرة والتنبيهات */
-.recent-activity, .alerts-section {
-    background-color: white;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-}
-
-.recent-activity h3, .alerts-section h3 {
-    margin-bottom: 1rem;
-    color: var(--primary-color);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.activity-list, .alerts-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.activity-item, .alert-item {
-    padding: 1rem;
-    background-color: #f9f9f9;
-    border-radius: var(--border-radius);
-    border-right: 4px solid var(--secondary-color);
-}
-
-.alert-item.warning {
-    border-right-color: var(--warning-color);
-}
-
-.alert-item.danger {
-    border-right-color: var(--danger-color);
-}
-
-/* التكيف مع الشاشات الصغيرة */
-@media (max-width: 768px) {
-    .stats-cards {
-        grid-template-columns: 1fr;
-    }
-    
-    .header-actions {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .search-box {
-        max-width: 100%;
-    }
-    
-    .student-item, .payment-item, .attendance-item {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    
-    .student-actions, .payment-actions {
-        align-self: flex-end;
-    }
-    
-    .attendance-controls {
-        flex-direction: column;
-    }
-    
-    .btn {
-        width: 100%;
-        justify-content: center;
-    }
-}
-
-@media (max-width: 480px) {
-    .nav-links {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-    
-    .nav-link {
-        justify-content: center;
-    }
-    
-    .filters {
-        justify-content: center;
-    }
-}
-// تطبيق إدارة المحظرة الموريتانية
-document.addEventListener('DOMContentLoaded', function() {
-    // تهيئة التطبيق
-    initApp();
-    
-    // العناصر الرئيسية
-    const pages = document.querySelectorAll('.page');
-    const navLinks = document.querySelectorAll('.nav-link');
-    const currentDateElement = document.getElementById('currentDate');
-    const todayDateElement = document.getElementById('todayDate');
-    
-    // تحديث التاريخ والوقت
-    function updateDateTime() {
-        const now = new Date();
-        const options = { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        };
-        const dateString = now.toLocaleDateString('ar-MR', options);
-        currentDateElement.textContent = dateString;
-        
-        // تاريخ اليوم للحضور
-        const todayOptions = { 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric'
-        };
-        const todayString = now.toLocaleDateString('ar-MR', todayOptions);
-        todayDateElement.textContent = todayString;
-    }
-    
-    // تحديث التاريخ كل دقيقة
-    updateDateTime();
-    setInterval(updateDateTime, 60000);
-    
-    // تبديل الصفحات
-    navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const pageId = this.getAttribute('data-page');
+    <script>
+        // تطبيق إدارة المحظرة الموريتانية
+        document.addEventListener('DOMContentLoaded', function() {
+            // تهيئة التطبيق
+            initApp();
             
-            // تحديث الروابط النشطة
-            navLinks.forEach(navLink => navLink.classList.remove('active'));
-            this.classList.add('active');
+            // العناصر الرئيسية
+            const pages = document.querySelectorAll('.page');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const currentDateElement = document.getElementById('currentDate');
+            const todayDateElement = document.getElementById('todayDate');
             
-            // إظهار الصفحة المطلوبة
-            pages.forEach(page => {
-                page.classList.remove('active');
-                if (page.id === pageId) {
-                    page.classList.add('active');
-                }
+            // تحديث التاريخ والوقت
+            function updateDateTime() {
+                const now = new Date();
+                const options = { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                };
+                const dateString = now.toLocaleDateString('ar-MR', options);
+                currentDateElement.textContent = dateString;
+                
+                // تاريخ اليوم للحضور
+                const todayOptions = { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric'
+                };
+                const todayString = now.toLocaleDateString('ar-MR', todayOptions);
+                todayDateElement.textContent = todayString;
+            }
+            
+            // تحديث التاريخ كل دقيقة
+            updateDateTime();
+            setInterval(updateDateTime, 60000);
+            
+            // تبديل الصفحات
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const pageId = this.getAttribute('data-page');
+                    
+                    // تحديث الروابط النشطة
+                    navLinks.forEach(navLink => navLink.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // إظهار الصفحة المطلوبة
+                    pages.forEach(page => {
+                        page.classList.remove('active');
+                        if (page.id === pageId) {
+                            page.classList.add('active');
+                        }
+                    });
+                    
+                    // تحميل البيانات الخاصة بالصفحة
+                    if (pageId === 'dashboard') {
+                        loadDashboard();
+                    } else if (pageId === 'students') {
+                        loadStudents();
+                    } else if (pageId === 'payments') {
+                        loadPayments();
+                    } else if (pageId === 'attendance') {
+                        loadAttendance();
+                    }
+                });
             });
             
-            // تحميل البيانات الخاصة بالصفحة
-            if (pageId === 'dashboard') {
+            // تهيئة التطبيق
+            function initApp() {
+                // تهيئة التخزين إذا لم يكن موجودًا
+                if (!localStorage.getItem('mahdhara_students')) {
+                    localStorage.setItem('mahdhara_students', JSON.stringify([]));
+                }
+                
+                if (!localStorage.getItem('mahdhara_payments')) {
+                    localStorage.setItem('mahdhara_payments', JSON.stringify([]));
+                }
+                
+                if (!localStorage.getItem('mahdhara_attendance')) {
+                    localStorage.setItem('mahdhara_attendance', JSON.stringify([]));
+                }
+                
+                if (!localStorage.getItem('mahdhara_activities')) {
+                    localStorage.setItem('mahdhara_activities', JSON.stringify([]));
+                }
+                
+                // تحميل لوحة التحكم أولاً
                 loadDashboard();
-            } else if (pageId === 'students') {
-                loadStudents();
-            } else if (pageId === 'payments') {
-                loadPayments();
-            } else if (pageId === 'attendance') {
-                loadAttendance();
-            }
-        });
-    });
-    
-    // تهيئة التطبيق
-    function initApp() {
-        // تهيئة التخزين إذا لم يكن موجودًا
-        if (!localStorage.getItem('mahdhara_students')) {
-            localStorage.setItem('mahdhara_students', JSON.stringify([]));
-        }
-        
-        if (!localStorage.getItem('mahdhara_payments')) {
-            localStorage.setItem('mahdhara_payments', JSON.stringify([]));
-        }
-        
-        if (!localStorage.getItem('mahdhara_attendance')) {
-            localStorage.setItem('mahdhara_attendance', JSON.stringify([]));
-        }
-        
-        if (!localStorage.getItem('mahdhara_activities')) {
-            localStorage.setItem('mahdhara_activities', JSON.stringify([]));
-        }
-        
-        // تحميل لوحة التحكم أولاً
-        loadDashboard();
-        
-        // إضافة مستخدمين تجريبيين إذا لم يكن هناك مستخدمين
-        const students = getStudents();
-        if (students.length === 0) {
-            addSampleData();
-        }
-        
-        // تسجيل بداية جلسة اليوم
-        addActivity('بداية استخدام النظام', 'info');
-    }
-    
-    // إضافة بيانات تجريبية
-    function addSampleData() {
-        const sampleStudents = [
-            {
-                id: generateId(),
-                fullName: 'محمد ولد أحمد',
-                familyName: 'آل الشيخ',
-                phone: '12345678',
-                monthlyFee: 5000,
-                registrationDate: new Date().toISOString().split('T')[0],
-                lastPaymentDate: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(),
-                status: 'unpaid'
-            },
-            {
-                id: generateId(),
-                fullName: 'عبد الله ولد محمد',
-                familyName: 'أهل انجاكو',
-                phone: '87654321',
-                monthlyFee: 6000,
-                registrationDate: new Date().toISOString().split('T')[0],
-                lastPaymentDate: new Date().toISOString(),
-                status: 'paid'
-            },
-            {
-                id: generateId(),
-                fullName: 'أحمد ولد سيدي',
-                familyName: 'أهل البركة',
-                phone: '55555555',
-                monthlyFee: 4500,
-                registrationDate: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                lastPaymentDate: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000).toISOString(),
-                status: 'overdue'
-            }
-        ];
-        
-        localStorage.setItem('mahdhara_students', JSON.stringify(sampleStudents));
-        
-        // إضافة مدفوعات تجريبية
-        const samplePayments = [
-            {
-                id: generateId(),
-                studentId: sampleStudents[1].id,
-                amount: 6000,
-                date: new Date().toISOString(),
-                notes: 'دفعة شهرية'
-            }
-        ];
-        
-        localStorage.setItem('mahdhara_payments', JSON.stringify(samplePayments));
-        
-        // إضافة نشاطات تجريبية
-        const sampleActivities = [
-            {
-                id: generateId(),
-                message: 'تم إضافة بيانات تجريبية للتجربة',
-                type: 'info',
-                date: new Date().toISOString()
-            }
-        ];
-        
-        localStorage.setItem('mahdhara_activities', JSON.stringify(sampleActivities));
-        
-        showNotification('تم إضافة بيانات تجريبية بنجاح', 'success');
-    }
-    
-    // توليد معرف فريد
-    function generateId() {
-        return Date.now().toString(36) + Math.random().toString(36).substr(2);
-    }
-    
-    // الحصول على قائمة التلاميذ
-    function getStudents() {
-        return JSON.parse(localStorage.getItem('mahdhara_students')) || [];
-    }
-    
-    // حفظ التلاميذ
-    function saveStudents(students) {
-        localStorage.setItem('mahdhara_students', JSON.stringify(students));
-    }
-    
-    // الحصول على المدفوعات
-    function getPayments() {
-        return JSON.parse(localStorage.getItem('mahdhara_payments')) || [];
-    }
-    
-    // حفظ المدفوعات
-    function savePayments(payments) {
-        localStorage.setItem('mahdhara_payments', JSON.stringify(payments));
-    }
-    
-    // الحصول على سجل الحضور
-    function getAttendance() {
-        return JSON.parse(localStorage.getItem('mahdhara_attendance')) || [];
-    }
-    
-    // حفظ سجل الحضور
-    function saveAttendance(attendance) {
-        localStorage.setItem('mahdhara_attendance', JSON.stringify(attendance));
-    }
-    
-    // الحصول على النشاطات
-    function getActivities() {
-        return JSON.parse(localStorage.getItem('mahdhara_activities')) || [];
-    }
-    
-    // حفظ النشاطات
-    function saveActivities(activities) {
-        localStorage.setItem('mahdhara_activities', JSON.stringify(activities));
-    }
-    
-    // إضافة نشاط جديد
-    function addActivity(message, type = 'info') {
-        const activities = getActivities();
-        const activity = {
-            id: generateId(),
-            message,
-            type,
-            date: new Date().toISOString()
-        };
-        
-        activities.unshift(activity);
-        
-        // الاحتفاظ بآخر 50 نشاط فقط
-        if (activities.length > 50) {
-            activities.pop();
-        }
-        
-        saveActivities(activities);
-    }
-    
-    // تحديث حالة التلميذ بناءً على آخر دفع
-    function updateStudentStatus(student) {
-        if (!student.lastPaymentDate) return 'unpaid';
-        
-        const lastPayment = new Date(student.lastPaymentDate);
-        const now = new Date();
-        const daysSincePayment = Math.floor((now - lastPayment) / (1000 * 60 * 60 * 24));
-        
-        if (daysSincePayment <= 30) {
-            return 'paid';
-        } else {
-            return 'overdue';
-        }
-    }
-    
-    // تحميل لوحة التحكم
-    function loadDashboard() {
-        const students = getStudents();
-        const payments = getPayments();
-        const activities = getActivities().slice(0, 5); // آخر 5 نشاطات
-        
-        // تحديث إحصائيات التلاميذ
-        document.getElementById('totalStudents').textContent = students.length;
-        
-        // حساب إجمالي المدفوعات هذا الشهر
-        const now = new Date();
-        const currentMonth = now.getMonth();
-        const currentYear = now.getFullYear();
-        
-        const monthlyPayments = payments.filter(payment => {
-            const paymentDate = new Date(payment.date);
-            return paymentDate.getMonth() === currentMonth && 
-                   paymentDate.getFullYear() === currentYear;
-        });
-        
-        const totalMonthlyPayments = monthlyPayments.reduce((sum, payment) => sum + payment.amount, 0);
-        document.getElementById('totalPayments').innerHTML = `${totalMonthlyPayments.toLocaleString()} <span>أوقية</span>`;
-        
-        // حساب المتأخرين عن الدفع
-        const overdueStudents = students.filter(student => {
-            const status = updateStudentStatus(student);
-            return status === 'overdue';
-        });
-        
-        document.getElementById('unpaidStudents').textContent = overdueStudents.length;
-        
-        // حساب الدخل المتوقع
-        const expectedIncome = students.reduce((sum, student) => sum + student.monthlyFee, 0);
-        document.getElementById('expectedIncome').innerHTML = `${expectedIncome.toLocaleString()} <span>أوقية</span>`;
-        
-        // تحديث النشاطات الأخيرة
-        const activityList = document.getElementById('recentActivity');
-        activityList.innerHTML = '';
-        
-        if (activities.length === 0) {
-            activityList.innerHTML = '<div class="activity-item"><p>لا توجد نشاطات حديثة</p></div>';
-        } else {
-            activities.forEach(activity => {
-                const activityDate = new Date(activity.date);
-                const timeString = activityDate.toLocaleTimeString('ar-MR', { hour: '2-digit', minute: '2-digit' });
                 
-                const activityItem = document.createElement('div');
-                activityItem.className = 'activity-item';
-                activityItem.innerHTML = `
-                    <p>${activity.message}</p>
-                    <small>${timeString}</small>
-                `;
-                activityList.appendChild(activityItem);
-            });
-        }
-        
-        // تحديث التنبيهات
-        updateAlerts();
-    }
-    
-    // تحديث التنبيهات
-    function updateAlerts() {
-        const students = getStudents();
-        const alertsList = document.getElementById('alertsList');
-        alertsList.innerHTML = '';
-        
-        // التحقق من المتأخرين عن الدفع
-        const overdueStudents = students.filter(student => {
-            const status = updateStudentStatus(student);
-            return status === 'overdue';
-        });
-        
-        if (overdueStudents.length > 0) {
-            const alertItem = document.createElement('div');
-            alertItem.className = 'alert-item danger';
-            alertItem.innerHTML = `
-                <p><i class="fas fa-exclamation-circle"></i> يوجد ${overdueStudents.length} تلميذ متأخر عن الدفع</p>
-            `;
-            alertsList.appendChild(alertItem);
-        }
-        
-        // التحقق من بداية شهر جديد
-        const today = new Date();
-        if (today.getDate() === 1) {
-            const alertItem = document.createElement('div');
-            alertItem.className = 'alert-item warning';
-            alertItem.innerHTML = `
-                <p><i class="fas fa-calendar-alt"></i> بداية شهر جديد! حان وقت تحصيل الرسوم الشهرية</p>
-            `;
-            alertsList.appendChild(alertItem);
-        }
-        
-        // إذا لم توجد تنبيهات
-        if (alertsList.children.length === 0) {
-            alertsList.innerHTML = '<div class="alert-item"><p>لا توجد تنبيهات حالياً</p></div>';
-        }
-    }
-    
-    // تحميل صفحة التلاميذ
-    function loadStudents() {
-        const students = getStudents();
-        const studentsList = document.getElementById('studentsList');
-        const searchInput = document.getElementById('studentSearch');
-        
-        // عرض التلاميذ
-        function displayStudents(filteredStudents) {
-            studentsList.innerHTML = '';
-            
-            if (filteredStudents.length === 0) {
-                const emptyState = document.createElement('div');
-                emptyState.className = 'empty-state';
-                emptyState.innerHTML = `
-                    <i class="fas fa-users-slash"></i>
-                    <p>${students.length === 0 ? 'لا يوجد تلاميذ مسجلين بعد' : 'لا توجد نتائج بحث'}</p>
-                    ${students.length === 0 ? '<button class="btn btn-primary" id="addFirstStudentBtn">إضافة أول تلميذ</button>' : ''}
-                `;
-                studentsList.appendChild(emptyState);
-                
+                // إضافة مستخدمين تجريبيين إذا لم يكن هناك مستخدمين
+                const students = getStudents();
                 if (students.length === 0) {
-                    document.getElementById('addFirstStudentBtn').addEventListener('click', openAddStudentModal);
+                    addSampleData();
                 }
-                return;
-            }
-            
-            filteredStudents.forEach(student => {
-                const status = updateStudentStatus(student);
-                const statusText = status === 'paid' ? 'مدفوع' : status === 'overdue' ? 'متأخر' : 'غير مدفوع';
-                const lastPaymentDate = student.lastPaymentDate ? 
-                    new Date(student.lastPaymentDate).toLocaleDateString('ar-MR') : 'لم يدفع بعد';
                 
-                const studentItem = document.createElement('div');
-                studentItem.className = 'student-item';
-                studentItem.innerHTML = `
-                    <div class="student-info">
-                        <h4>${student.fullName}</h4>
-                        <div class="student-details">
-                            <span><i class="fas fa-home"></i> ${student.familyName}</span>
-                            <span><i class="fas fa-phone"></i> ${student.phone || 'لا يوجد'}</span>
-                            <span><i class="fas fa-money-bill"></i> ${student.monthlyFee.toLocaleString()} أوقية</span>
-                            <span class="payment-status ${status}">${statusText}</span>
-                        </div>
-                        <small>آخر دفع: ${lastPaymentDate}</small>
-                    </div>
-                    <div class="student-actions">
-                        <button class="btn btn-secondary btn-sm edit-student" data-id="${student.id}">
-                            <i class="fas fa-edit"></i> تعديل
-                        </button>
-                        <button class="btn btn-danger btn-sm delete-student" data-id="${student.id}">
-                            <i class="fas fa-trash"></i> حذف
-                        </button>
-                        <button class="btn btn-primary btn-sm record-payment" data-id="${student.id}">
-                            <i class="fas fa-money-bill-wave"></i> دفع
-                        </button>
-                    </div>
-                `;
-                studentsList.appendChild(studentItem);
-            });
-            
-            // إضافة أحداث للأزرار
-            document.querySelectorAll('.edit-student').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const studentId = this.getAttribute('data-id');
-                    openEditStudentModal(studentId);
-                });
-            });
-            
-            document.querySelectorAll('.delete-student').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const studentId = this.getAttribute('data-id');
-                    confirmDeleteStudent(studentId);
-                });
-            });
-            
-            document.querySelectorAll('.record-payment').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const studentId = this.getAttribute('data-id');
-                    openPaymentModal(studentId);
-                });
-            });
-        }
-        
-        // عرض جميع التلاميذ أولاً
-        displayStudents(students);
-        
-        // البحث عن التلاميذ
-        searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            const filteredStudents = students.filter(student => 
-                student.fullName.toLowerCase().includes(searchTerm) ||
-                student.familyName.toLowerCase().includes(searchTerm) ||
-                (student.phone && student.phone.includes(searchTerm))
-            );
-            
-            displayStudents(filteredStudents);
-        });
-        
-        // زر إضافة تلميذ جديد
-        document.getElementById('addStudentBtn').addEventListener('click', openAddStudentModal);
-    }
-    
-    // فتح نافذة إضافة تلميذ
-    function openAddStudentModal() {
-        const modal = document.getElementById('studentModal');
-        const form = document.getElementById('studentForm');
-        const modalTitle = document.getElementById('modalTitle');
-        
-        modalTitle.textContent = 'إضافة تلميذ جديد';
-        form.reset();
-        document.getElementById('studentId').value = '';
-        
-        // تعيين تاريخ اليوم كتاريخ التسجيل
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('registrationDate').value = today;
-        
-        modal.classList.add('active');
-        
-        // إغلاق النافذة
-        document.getElementById('closeModal').addEventListener('click', closeStudentModal);
-        document.getElementById('cancelBtn').addEventListener('click', closeStudentModal);
-        
-        // منع إغلاق النافذة عند النقر خارجها
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                closeStudentModal();
+                // تسجيل بداية جلسة اليوم
+                addActivity('بداية استخدام النظام', 'info');
             }
-        });
-    }
-    
-    // فتح نافذة تعديل تلميذ
-    function openEditStudentModal(studentId) {
-        const students = getStudents();
-        const student = students.find(s => s.id === studentId);
-        
-        if (!student) return;
-        
-        const modal = document.getElementById('studentModal');
-        const form = document.getElementById('studentForm');
-        const modalTitle = document.getElementById('modalTitle');
-        
-        modalTitle.textContent = 'تعديل بيانات التلميذ';
-        
-        // تعبئة النموذج ببيانات التلميذ
-        document.getElementById('studentId').value = student.id;
-        document.getElementById('fullName').value = student.fullName;
-        document.getElementById('familyName').value = student.familyName;
-        document.getElementById('phone').value = student.phone || '';
-        document.getElementById('monthlyFee').value = student.monthlyFee;
-        document.getElementById('registrationDate').value = student.registrationDate;
-        
-        modal.classList.add('active');
-        
-        // إغلاق النافذة
-        document.getElementById('closeModal').addEventListener('click', closeStudentModal);
-        document.getElementById('cancelBtn').addEventListener('click', closeStudentModal);
-        
-        // منع إغلاق النافذة عند النقر خارجها
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                closeStudentModal();
+            
+            // إضافة بيانات تجريبية
+            function addSampleData() {
+                const sampleStudents = [
+                    {
+                        id: generateId(),
+                        fullName: 'محمد ولد أحمد',
+                        familyName: 'آل الشيخ',
+                        phone: '12345678',
+                        monthlyFee: 5000,
+                        registrationDate: new Date().toISOString().split('T')[0],
+                        lastPaymentDate: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(),
+                        status: 'unpaid'
+                    },
+                    {
+                        id: generateId(),
+                        fullName: 'عبد الله ولد محمد',
+                        familyName: 'أهل انجاكو',
+                        phone: '87654321',
+                        monthlyFee: 6000,
+                        registrationDate: new Date().toISOString().split('T')[0],
+                        lastPaymentDate: new Date().toISOString(),
+                        status: 'paid'
+                    },
+                    {
+                        id: generateId(),
+                        fullName: 'أحمد ولد سيدي',
+                        familyName: 'أهل البركة',
+                        phone: '55555555',
+                        monthlyFee: 4500,
+                        registrationDate: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                        lastPaymentDate: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000).toISOString(),
+                        status: 'overdue'
+                    }
+                ];
+                
+                localStorage.setItem('mahdhara_students', JSON.stringify(sampleStudents));
+                
+                // إضافة مدفوعات تجريبية
+                const samplePayments = [
+                    {
+                        id: generateId(),
+                        studentId: sampleStudents[1].id,
+                        amount: 6000,
+                        date: new Date().toISOString(),
+                        notes: 'دفعة شهرية'
+                    }
+                ];
+                
+                localStorage.setItem('mahdhara_payments', JSON.stringify(samplePayments));
+                
+                // إضافة نشاطات تجريبية
+                const sampleActivities = [
+                    {
+                        id: generateId(),
+                        message: 'تم إضافة بيانات تجريبية للتجربة',
+                        type: 'info',
+                        date: new Date().toISOString()
+                    }
+                ];
+                
+                localStorage.setItem('mahdhara_activities', JSON.stringify(sampleActivities));
+                
+                showNotification('تم إضافة بيانات تجريبية بنجاح', 'success');
             }
-        });
-    }
-    
-    // إغلاق نافذة التلميذ
-    function closeStudentModal() {
-        document.getElementById('studentModal').classList.remove('active');
-    }
-    
-    // تأكيد حذف تلميذ
-    function confirmDeleteStudent(studentId) {
-        const students = getStudents();
-        const student = students.find(s => s.id === studentId);
-        
-        if (!student) return;
-        
-        const modal = document.getElementById('confirmModal');
-        const message = document.getElementById('confirmMessage');
-        
-        message.textContent = `هل أنت متأكد من حذف التلميذ "${student.fullName}"؟`;
-        
-        modal.classList.add('active');
-        
-        // إلغاء الحذف
-        document.getElementById('cancelDeleteBtn').onclick = function() {
-            modal.classList.remove('active');
-        };
-        
-        // تأكيد الحذف
-        document.getElementById('confirmDeleteBtn').onclick = function() {
-            deleteStudent(studentId);
-            modal.classList.remove('active');
-        };
-        
-        // إغلاق النافذة عند النقر خارجها
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                modal.classList.remove('active');
+            
+            // توليد معرف فريد
+            function generateId() {
+                return Date.now().toString(36) + Math.random().toString(36).substr(2);
             }
-        });
-    }
-    
-    // حذف تلميذ
-    function deleteStudent(studentId) {
-        let students = getStudents();
-        const student = students.find(s => s.id === studentId);
-        
-        students = students.filter(s => s.id !== studentId);
-        saveStudents(students);
-        
-        // إزالة المدفوعات المرتبطة بالتلميذ
-        let payments = getPayments();
-        payments = payments.filter(p => p.studentId !== studentId);
-        savePayments(payments);
-        
-        addActivity(`تم حذف التلميذ ${student.fullName}`, 'danger');
-        showNotification('تم حذف التلميذ بنجاح', 'success');
-        
-        // إعادة تحميل القائمة
-        if (document.getElementById('students').classList.contains('active')) {
-            loadStudents();
-        }
-        
-        // تحديث لوحة التحكم
-        loadDashboard();
-    }
-    
-    // حفظ التلميذ (إضافة/تعديل)
-    document.getElementById('studentForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const studentId = document.getElementById('studentId').value;
-        const fullName = document.getElementById('fullName').value;
-        const familyName = document.getElementById('familyName').value;
-        const phone = document.getElementById('phone').value;
-        const monthlyFee = parseInt(document.getElementById('monthlyFee').value);
-        const registrationDate = document.getElementById('registrationDate').value;
-        
-        let students = getStudents();
-        
-        if (studentId) {
-            // تحديث تلميذ موجود
-            const index = students.findIndex(s => s.id === studentId);
-            if (index !== -1) {
-                students[index] = {
-                    ...students[index],
-                    fullName,
-                    familyName,
-                    phone,
-                    monthlyFee,
-                    registrationDate
+            
+            // الحصول على قائمة التلاميذ
+            function getStudents() {
+                return JSON.parse(localStorage.getItem('mahdhara_students')) || [];
+            }
+            
+            // حفظ التلاميذ
+            function saveStudents(students) {
+                localStorage.setItem('mahdhara_students', JSON.stringify(students));
+            }
+            
+            // الحصول على المدفوعات
+            function getPayments() {
+                return JSON.parse(localStorage.getItem('mahdhara_payments')) || [];
+            }
+            
+            // حفظ المدفوعات
+            function savePayments(payments) {
+                localStorage.setItem('mahdhara_payments', JSON.stringify(payments));
+            }
+            
+            // الحصول على سجل الحضور
+            function getAttendance() {
+                return JSON.parse(localStorage.getItem('mahdhara_attendance')) || [];
+            }
+            
+            // حفظ سجل الحضور
+            function saveAttendance(attendance) {
+                localStorage.setItem('mahdhara_attendance', JSON.stringify(attendance));
+            }
+            
+            // الحصول على النشاطات
+            function getActivities() {
+                return JSON.parse(localStorage.getItem('mahdhara_activities')) || [];
+            }
+            
+            // حفظ النشاطات
+            function saveActivities(activities) {
+                localStorage.setItem('mahdhara_activities', JSON.stringify(activities));
+            }
+            
+            // إضافة نشاط جديد
+            function addActivity(message, type = 'info') {
+                const activities = getActivities();
+                const activity = {
+                    id: generateId(),
+                    message,
+                    type,
+                    date: new Date().toISOString()
                 };
                 
-                addActivity(`تم تعديل بيانات التلميذ ${fullName}`, 'info');
-                showNotification('تم تحديث بيانات التلميذ بنجاح', 'success');
-            }
-        } else {
-            // إضافة تلميذ جديد
-            const newStudent = {
-                id: generateId(),
-                fullName,
-                familyName,
-                phone,
-                monthlyFee,
-                registrationDate,
-                lastPaymentDate: null,
-                status: 'unpaid'
-            };
-            
-            students.push(newStudent);
-            
-            addActivity(`تم إضافة تلميذ جديد: ${fullName}`, 'success');
-            showNotification('تم إضافة التلميذ بنجاح', 'success');
-        }
-        
-        saveStudents(students);
-        closeStudentModal();
-        
-        // إعادة تحميل القائمة
-        if (document.getElementById('students').classList.contains('active')) {
-            loadStudents();
-        }
-        
-        // تحديث لوحة التحكم
-        loadDashboard();
-    });
-    
-    // تحميل صفحة المدفوعات
-    function loadPayments() {
-        const students = getStudents();
-        const payments = getPayments();
-        const paymentsList = document.getElementById('paymentsList');
-        const filterButtons = document.querySelectorAll('.filter-btn');
-        
-        // حساب المجموع الكلي
-        function updateTotalAmount() {
-            const total = payments.reduce((sum, payment) => sum + payment.amount, 0);
-            document.getElementById('totalAmount').textContent = `${total.toLocaleString()} أوقية`;
-        }
-        
-        updateTotalAmount();
-        
-        // عرض المدفوعات
-        function displayPayments(filter = 'all') {
-            paymentsList.innerHTML = '';
-            
-            if (payments.length === 0) {
-                const emptyState = document.createElement('div');
-                emptyState.className = 'empty-state';
-                emptyState.innerHTML = `
-                    <i class="fas fa-money-bill-wave-slash"></i>
-                    <p>لا توجد مدفوعات مسجلة بعد</p>
-                `;
-                paymentsList.appendChild(emptyState);
-                return;
-            }
-            
-            // تجميع المدفوعات حسب التلميذ
-            const paymentMap = {};
-            payments.forEach(payment => {
-                if (!paymentMap[payment.studentId]) {
-                    paymentMap[payment.studentId] = [];
+                activities.unshift(activity);
+                
+                // الاحتفاظ بآخر 50 نشاط فقط
+                if (activities.length > 50) {
+                    activities.pop();
                 }
-                paymentMap[payment.studentId].push(payment);
-            });
+                
+                saveActivities(activities);
+            }
             
-            // عرض التلاميذ مع مدفوعاتهم
-            students.forEach(student => {
-                const studentPayments = paymentMap[student.id] || [];
-                const studentStatus = updateStudentStatus(student);
+            // تحديث حالة التلميذ بناءً على آخر دفع
+            function updateStudentStatus(student) {
+                if (!student.lastPaymentDate) return 'unpaid';
                 
-                // تطبيق الفلتر
-                if (filter === 'paid' && studentStatus !== 'paid') return;
-                if (filter === 'unpaid' && studentStatus !== 'unpaid') return;
-                if (filter === 'overdue' && studentStatus !== 'overdue') return;
+                const lastPayment = new Date(student.lastPaymentDate);
+                const now = new Date();
+                const daysSincePayment = Math.floor((now - lastPayment) / (1000 * 60 * 60 * 24));
                 
-                const statusText = studentStatus === 'paid' ? 'مدفوع' : 
-                                  studentStatus === 'overdue' ? 'متأخر' : 'غير مدفوع';
-                
-                const totalPaid = studentPayments.reduce((sum, payment) => sum + payment.amount, 0);
-                const lastPayment = studentPayments.length > 0 ? 
-                    new Date(studentPayments[studentPayments.length - 1].date).toLocaleDateString('ar-MR') : 
-                    'لا يوجد';
-                
-                const paymentItem = document.createElement('div');
-                paymentItem.className = `payment-item ${studentStatus === 'overdue' ? 'overdue' : ''}`;
-                paymentItem.innerHTML = `
-                    <div class="payment-info">
-                        <h4>${student.fullName}</h4>
-                        <div class="payment-details">
-                            <span><i class="fas fa-home"></i> ${student.familyName}</span>
-                            <span><i class="fas fa-money-bill"></i> ${student.monthlyFee.toLocaleString()} أوقية/شهر</span>
-                            <span class="payment-status ${studentStatus}">${statusText}</span>
-                        </div>
-                        <div>
-                            <small>المدفوع: ${totalPaid.toLocaleString()} أوقية</small>
-                            <small> | آخر دفع: ${lastPayment}</small>
-                        </div>
-                    </div>
-                    <div class="payment-actions">
-                        <button class="btn btn-primary btn-sm record-payment" data-id="${student.id}">
-                            <i class="fas fa-money-bill-wave"></i> تسجيل دفع
-                        </button>
-                    </div>
-                `;
-                paymentsList.appendChild(paymentItem);
-            });
+                if (daysSincePayment <= 30) {
+                    return 'paid';
+                } else {
+                    return 'overdue';
+                }
+            }
             
-            // إضافة أحداث لأزرار تسجيل الدفع
-            document.querySelectorAll('.record-payment').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const studentId = this.getAttribute('data-id');
-                    openPaymentModal(studentId);
+            // تحميل لوحة التحكم
+            function loadDashboard() {
+                const students = getStudents();
+                const payments = getPayments();
+                const activities = getActivities().slice(0, 5); // آخر 5 نشاطات
+                
+                // تحديث إحصائيات التلاميذ
+                document.getElementById('totalStudents').textContent = students.length;
+                
+                // حساب إجمالي المدفوعات هذا الشهر
+                const now = new Date();
+                const currentMonth = now.getMonth();
+                const currentYear = now.getFullYear();
+                
+                const monthlyPayments = payments.filter(payment => {
+                    const paymentDate = new Date(payment.date);
+                    return paymentDate.getMonth() === currentMonth && 
+                           paymentDate.getFullYear() === currentYear;
                 });
-            });
-        }
-        
-        // عرض جميع المدفوعات أولاً
-        displayPayments('all');
-        
-        // الفلاتر
-        filterButtons.forEach(btn => {
-            btn.addEventListener('click', function() {
-                filterButtons.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
                 
-                const filter = this.getAttribute('data-filter');
-                displayPayments(filter);
+                const totalMonthlyPayments = monthlyPayments.reduce((sum, payment) => sum + payment.amount, 0);
+                document.getElementById('totalPayments').innerHTML = `${totalMonthlyPayments.toLocaleString()} <span>أوقية</span>`;
+                
+                // حساب المتأخرين عن الدفع
+                const overdueStudents = students.filter(student => {
+                    const status = updateStudentStatus(student);
+                    return status === 'overdue';
+                });
+                
+                document.getElementById('unpaidStudents').textContent = overdueStudents.length;
+                
+                // حساب الدخل المتوقع
+                const expectedIncome = students.reduce((sum, student) => sum + student.monthlyFee, 0);
+                document.getElementById('expectedIncome').innerHTML = `${expectedIncome.toLocaleString()} <span>أوقية</span>`;
+                
+                // تحديث النشاطات الأخيرة
+                const activityList = document.getElementById('recentActivity');
+                activityList.innerHTML = '';
+                
+                if (activities.length === 0) {
+                    activityList.innerHTML = '<div class="activity-item"><p>لا توجد نشاطات حديثة</p></div>';
+                } else {
+                    activities.forEach(activity => {
+                        const activityDate = new Date(activity.date);
+                        const timeString = activityDate.toLocaleTimeString('ar-MR', { hour: '2-digit', minute: '2-digit' });
+                        
+                        const activityItem = document.createElement('div');
+                        activityItem.className = 'activity-item';
+                        activityItem.innerHTML = `
+                            <p>${activity.message}</p>
+                            <small>${timeString}</small>
+                        `;
+                        activityList.appendChild(activityItem);
+                    });
+                }
+                
+                // تحديث التنبيهات
+                updateAlerts();
+            }
+            
+            // تحديث التنبيهات
+            function updateAlerts() {
+                const students = getStudents();
+                const alertsList = document.getElementById('alertsList');
+                alertsList.innerHTML = '';
+                
+                // التحقق من المتأخرين عن الدفع
+                const overdueStudents = students.filter(student => {
+                    const status = updateStudentStatus(student);
+                    return status === 'overdue';
+                });
+                
+                if (overdueStudents.length > 0) {
+                    const alertItem = document.createElement('div');
+                    alertItem.className = 'alert-item danger';
+                    alertItem.innerHTML = `
+                        <p><i class="fas fa-exclamation-circle"></i> يوجد ${overdueStudents.length} تلميذ متأخر عن الدفع</p>
+                    `;
+                    alertsList.appendChild(alertItem);
+                }
+                
+                // التحقق من بداية شهر جديد
+                const today = new Date();
+                if (today.getDate() === 1) {
+                    const alertItem = document.createElement('div');
+                    alertItem.className = 'alert-item warning';
+                    alertItem.innerHTML = `
+                        <p><i class="fas fa-calendar-alt"></i> بداية شهر جديد! حان وقت تحصيل الرسوم الشهرية</p>
+                    `;
+                    alertsList.appendChild(alertItem);
+                }
+                
+                // إذا لم توجد تنبيهات
+                if (alertsList.children.length === 0) {
+                    alertsList.innerHTML = '<div class="alert-item"><p>لا توجد تنبيهات حالياً</p></div>';
+                }
+            }
+            
+            // تحميل صفحة التلاميذ
+            function loadStudents() {
+                const students = getStudents();
+                const studentsList = document.getElementById('studentsList');
+                const searchInput = document.getElementById('studentSearch');
+                
+                // عرض التلاميذ
+                function displayStudents(filteredStudents) {
+                    studentsList.innerHTML = '';
+                    
+                    if (filteredStudents.length === 0) {
+                        const emptyState = document.createElement('div');
+                        emptyState.className = 'empty-state';
+                        emptyState.innerHTML = `
+                            <i class="fas fa-users-slash"></i>
+                            <p>${students.length === 0 ? 'لا يوجد تلاميذ مسجلين بعد' : 'لا توجد نتائج بحث'}</p>
+                            ${students.length === 0 ? '<button class="btn btn-primary" id="addFirstStudentBtn">إضافة أول تلميذ</button>' : ''}
+                        `;
+                        studentsList.appendChild(emptyState);
+                        
+                        if (students.length === 0) {
+                            document.getElementById('addFirstStudentBtn').addEventListener('click', openAddStudentModal);
+                        }
+                        return;
+                    }
+                    
+                    filteredStudents.forEach(student => {
+                        const status = updateStudentStatus(student);
+                        const statusText = status === 'paid' ? 'مدفوع' : status === 'overdue' ? 'متأخر' : 'غير مدفوع';
+                        const lastPaymentDate = student.lastPaymentDate ? 
+                            new Date(student.lastPaymentDate).toLocaleDateString('ar-MR') : 'لم يدفع بعد';
+                        
+                        const studentItem = document.createElement('div');
+                        studentItem.className = 'student-item';
+                        studentItem.innerHTML = `
+                            <div class="student-info">
+                                <h4>${student.fullName}</h4>
+                                <div class="student-details">
+                                    <span><i class="fas fa-home"></i> ${student.familyName}</span>
+                                    <span><i class="fas fa-phone"></i> ${student.phone || 'لا يوجد'}</span>
+                                    <span><i class="fas fa-money-bill"></i> ${student.monthlyFee.toLocaleString()} أوقية</span>
+                                    <span class="payment-status ${status}">${statusText}</span>
+                                </div>
+                                <small>آخر دفع: ${lastPaymentDate}</small>
+                            </div>
+                            <div class="student-actions">
+                                <button class="btn btn-secondary btn-sm edit-student" data-id="${student.id}">
+                                    <i class="fas fa-edit"></i> تعديل
+                                </button>
+                                <button class="btn btn-danger btn-sm delete-student" data-id="${student.id}">
+                                    <i class="fas fa-trash"></i> حذف
+                                </button>
+                                <button class="btn btn-primary btn-sm record-payment" data-id="${student.id}">
+                                    <i class="fas fa-money-bill-wave"></i> دفع
+                                </button>
+                            </div>
+                        `;
+                        studentsList.appendChild(studentItem);
+                    });
+                    
+                    // إضافة أحداث للأزرار
+                    document.querySelectorAll('.edit-student').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const studentId = this.getAttribute('data-id');
+                            openEditStudentModal(studentId);
+                        });
+                    });
+                    
+                    document.querySelectorAll('.delete-student').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const studentId = this.getAttribute('data-id');
+                            confirmDeleteStudent(studentId);
+                        });
+                    });
+                    
+                    document.querySelectorAll('.record-payment').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const studentId = this.getAttribute('data-id');
+                            openPaymentModal(studentId);
+                        });
+                    });
+                }
+                
+                // عرض جميع التلاميذ أولاً
+                displayStudents(students);
+                
+                // البحث عن التلاميذ
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const filteredStudents = students.filter(student => 
+                        student.fullName.toLowerCase().includes(searchTerm) ||
+                        student.familyName.toLowerCase().includes(searchTerm) ||
+                        (student.phone && student.phone.includes(searchTerm))
+                    );
+                    
+                    displayStudents(filteredStudents);
+                });
+                
+                // زر إضافة تلميذ جديد
+                document.getElementById('addStudentBtn').addEventListener('click', openAddStudentModal);
+            }
+            
+            // فتح نافذة إضافة تلميذ
+            function openAddStudentModal() {
+                const modal = document.getElementById('studentModal');
+                const form = document.getElementById('studentForm');
+                const modalTitle = document.getElementById('modalTitle');
+                
+                modalTitle.textContent = 'إضافة تلميذ جديد';
+                form.reset();
+                document.getElementById('studentId').value = '';
+                
+                // تعيين تاريخ اليوم كتاريخ التسجيل
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('registrationDate').value = today;
+                
+                modal.classList.add('active');
+                
+                // إغلاق النافذة
+                document.getElementById('closeModal').addEventListener('click', closeStudentModal);
+                document.getElementById('cancelBtn').addEventListener('click', closeStudentModal);
+                
+                // منع إغلاق النافذة عند النقر خارجها
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        closeStudentModal();
+                    }
+                });
+            }
+            
+            // فتح نافذة تعديل تلميذ
+            function openEditStudentModal(studentId) {
+                const students = getStudents();
+                const student = students.find(s => s.id === studentId);
+                
+                if (!student) return;
+                
+                const modal = document.getElementById('studentModal');
+                const form = document.getElementById('studentForm');
+                const modalTitle = document.getElementById('modalTitle');
+                
+                modalTitle.textContent = 'تعديل بيانات التلميذ';
+                
+                // تعبئة النموذج ببيانات التلميذ
+                document.getElementById('studentId').value = student.id;
+                document.getElementById('fullName').value = student.fullName;
+                document.getElementById('familyName').value = student.familyName;
+                document.getElementById('phone').value = student.phone || '';
+                document.getElementById('monthlyFee').value = student.monthlyFee;
+                document.getElementById('registrationDate').value = student.registrationDate;
+                
+                modal.classList.add('active');
+                
+                // إغلاق النافذة
+                document.getElementById('closeModal').addEventListener('click', closeStudentModal);
+                document.getElementById('cancelBtn').addEventListener('click', closeStudentModal);
+                
+                // منع إغلاق النافذة عند النقر خارجها
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        closeStudentModal();
+                    }
+                });
+            }
+            
+            // إغلاق نافذة التلميذ
+            function closeStudentModal() {
+                document.getElementById('studentModal').classList.remove('active');
+            }
+            
+            // تأكيد حذف تلميذ
+            function confirmDeleteStudent(studentId) {
+                const students = getStudents();
+                const student = students.find(s => s.id === studentId);
+                
+                if (!student) return;
+                
+                const modal = document.getElementById('confirmModal');
+                const message = document.getElementById('confirmMessage');
+                
+                message.textContent = `هل أنت متأكد من حذف التلميذ "${student.fullName}"؟`;
+                
+                modal.classList.add('active');
+                
+                // إلغاء الحذف
+                document.getElementById('cancelDeleteBtn').onclick = function() {
+                    modal.classList.remove('active');
+                };
+                
+                // تأكيد الحذف
+                document.getElementById('confirmDeleteBtn').onclick = function() {
+                    deleteStudent(studentId);
+                    modal.classList.remove('active');
+                };
+                
+                // إغلاق النافذة عند النقر خارجها
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        modal.classList.remove('active');
+                    }
+                });
+            }
+            
+            // حذف تلميذ
+            function deleteStudent(studentId) {
+                let students = getStudents();
+                const student = students.find(s => s.id === studentId);
+                
+                students = students.filter(s => s.id !== studentId);
+                saveStudents(students);
+                
+                // إزالة المدفوعات المرتبطة بالتلميذ
+                let payments = getPayments();
+                payments = payments.filter(p => p.studentId !== studentId);
+                savePayments(payments);
+                
+                addActivity(`تم حذف التلميذ ${student.fullName}`, 'danger');
+                showNotification('تم حذف التلميذ بنجاح', 'success');
+                
+                // إعادة تحميل القائمة
+                if (document.getElementById('students').classList.contains('active')) {
+                    loadStudents();
+                }
+                
+                // تحديث لوحة التحكم
+                loadDashboard();
+            }
+            
+            // حفظ التلميذ (إضافة/تعديل)
+            document.getElementById('studentForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const studentId = document.getElementById('studentId').value;
+                const fullName = document.getElementById('fullName').value;
+                const familyName = document.getElementById('familyName').value;
+                const phone = document.getElementById('phone').value;
+                const monthlyFee = parseInt(document.getElementById('monthlyFee').value);
+                const registrationDate = document.getElementById('registrationDate').value;
+                
+                let students = getStudents();
+                
+                if (studentId) {
+                    // تحديث تلميذ موجود
+                    const index = students.findIndex(s => s.id === studentId);
+                    if (index !== -1) {
+                        students[index] = {
+                            ...students[index],
+                            fullName,
+                            familyName,
+                            phone,
+                            monthlyFee,
+                            registrationDate
+                        };
+                        
+                        addActivity(`تم تعديل بيانات التلميذ ${fullName}`, 'info');
+                        showNotification('تم تحديث بيانات التلميذ بنجاح', 'success');
+                    }
+                } else {
+                    // إضافة تلميذ جديد
+                    const newStudent = {
+                        id: generateId(),
+                        fullName,
+                        familyName,
+                        phone,
+                        monthlyFee,
+                        registrationDate,
+                        lastPaymentDate: null,
+                        status: 'unpaid'
+                    };
+                    
+                    students.push(newStudent);
+                    
+                    addActivity(`تم إضافة تلميذ جديد: ${fullName}`, 'success');
+                    showNotification('تم إضافة التلميذ بنجاح', 'success');
+                }
+                
+                saveStudents(students);
+                closeStudentModal();
+                
+                // إعادة تحميل القائمة
+                if (document.getElementById('students').classList.contains('active')) {
+                    loadStudents();
+                }
+                
+                // تحديث لوحة التحكم
+                loadDashboard();
             });
-        });
-    }
-    
-    // فتح نافذة تسجيل الدفع
-    function openPaymentModal(studentId) {
-        const students = getStudents();
-        const student = students.find(s => s.id === studentId);
-        
-        if (!student) return;
-        
-        const modal = document.getElementById('paymentModal');
-        const form = document.getElementById('paymentForm');
-        
-        document.getElementById('paymentStudentId').value = student.id;
-        document.getElementById('studentNameForPayment').value = student.fullName;
-        document.getElementById('paymentAmount').value = student.monthlyFee;
-        
-        // تعيين التاريخ والوقت الحالي
-        const now = new Date();
-        const dateTimeString = now.toISOString().slice(0, 16);
-        document.getElementById('paymentDate').value = dateTimeString;
-        
-        modal.classList.add('active');
-        
-        // إغلاق النافذة
-        document.getElementById('closePaymentModal').addEventListener('click', closePaymentModal);
-        document.getElementById('cancelPaymentBtn').addEventListener('click', closePaymentModal);
-        
-        // منع إغلاق النافذة عند النقر خارجها
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
+            
+            // تحميل صفحة المدفوعات
+            function loadPayments() {
+                const students = getStudents();
+                const payments = getPayments();
+                const paymentsList = document.getElementById('paymentsList');
+                const filterButtons = document.querySelectorAll('.filter-btn');
+                
+                // حساب المجموع الكلي
+                function updateTotalAmount() {
+                    const total = payments.reduce((sum, payment) => sum + payment.amount, 0);
+                    document.getElementById('totalAmount').textContent = `${total.toLocaleString()} أوقية`;
+                }
+                
+                updateTotalAmount();
+                
+                // عرض المدفوعات
+                function displayPayments(filter = 'all') {
+                    paymentsList.innerHTML = '';
+                    
+                    if (payments.length === 0) {
+                        const emptyState = document.createElement('div');
+                        emptyState.className = 'empty-state';
+                        emptyState.innerHTML = `
+                            <i class="fas fa-money-bill-wave-slash"></i>
+                            <p>لا توجد مدفوعات مسجلة بعد</p>
+                        `;
+                        paymentsList.appendChild(emptyState);
+                        return;
+                    }
+                    
+                    // تجميع المدفوعات حسب التلميذ
+                    const paymentMap = {};
+                    payments.forEach(payment => {
+                        if (!paymentMap[payment.studentId]) {
+                            paymentMap[payment.studentId] = [];
+                        }
+                        paymentMap[payment.studentId].push(payment);
+                    });
+                    
+                    // عرض التلاميذ مع مدفوعاتهم
+                    students.forEach(student => {
+                        const studentPayments = paymentMap[student.id] || [];
+                        const studentStatus = updateStudentStatus(student);
+                        
+                        // تطبيق الفلتر
+                        if (filter === 'paid' && studentStatus !== 'paid') return;
+                        if (filter === 'unpaid' && studentStatus !== 'unpaid') return;
+                        if (filter === 'overdue' && studentStatus !== 'overdue') return;
+                        
+                        const statusText = studentStatus === 'paid' ? 'مدفوع' : 
+                                          studentStatus === 'overdue' ? 'متأخر' : 'غير مدفوع';
+                        
+                        const totalPaid = studentPayments.reduce((sum, payment) => sum + payment.amount, 0);
+                        const lastPayment = studentPayments.length > 0 ? 
+                            new Date(studentPayments[studentPayments.length - 1].date).toLocaleDateString('ar-MR') : 
+                            'لا يوجد';
+                        
+                        const paymentItem = document.createElement('div');
+                        paymentItem.className = `payment-item ${studentStatus === 'overdue' ? 'overdue' : ''}`;
+                        paymentItem.innerHTML = `
+                            <div class="payment-info">
+                                <h4>${student.fullName}</h4>
+                                <div class="payment-details">
+                                    <span><i class="fas fa-home"></i> ${student.familyName}</span>
+                                    <span><i class="fas fa-money-bill"></i> ${student.monthlyFee.toLocaleString()} أوقية/شهر</span>
+                                    <span class="payment-status ${studentStatus}">${statusText}</span>
+                                </div>
+                                <div>
+                                    <small>المدفوع: ${totalPaid.toLocaleString()} أوقية</small>
+                                    <small> | آخر دفع: ${lastPayment}</small>
+                                </div>
+                            </div>
+                            <div class="payment-actions">
+                                <button class="btn btn-primary btn-sm record-payment" data-id="${student.id}">
+                                    <i class="fas fa-money-bill-wave"></i> تسجيل دفع
+                                </button>
+                            </div>
+                        `;
+                        paymentsList.appendChild(paymentItem);
+                    });
+                    
+                    // إضافة أحداث لأزرار تسجيل الدفع
+                    document.querySelectorAll('.record-payment').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const studentId = this.getAttribute('data-id');
+                            openPaymentModal(studentId);
+                        });
+                    });
+                }
+                
+                // عرض جميع المدفوعات أولاً
+                displayPayments('all');
+                
+                // الفلاتر
+                filterButtons.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        filterButtons.forEach(b => b.classList.remove('active'));
+                        this.classList.add('active');
+                        
+                        const filter = this.getAttribute('data-filter');
+                        displayPayments(filter);
+                    });
+                });
+            }
+            
+            // فتح نافذة تسجيل الدفع
+            function openPaymentModal(studentId) {
+                const students = getStudents();
+                const student = students.find(s => s.id === studentId);
+                
+                if (!student) return;
+                
+                const modal = document.getElementById('paymentModal');
+                const form = document.getElementById('paymentForm');
+                
+                document.getElementById('paymentStudentId').value = student.id;
+                document.getElementById('studentNameForPayment').value = student.fullName;
+                document.getElementById('paymentAmount').value = student.monthlyFee;
+                
+                // تعيين التاريخ والوقت الحالي
+                const now = new Date();
+                const dateTimeString = now.toISOString().slice(0, 16);
+                document.getElementById('paymentDate').value = dateTimeString;
+                
+                modal.classList.add('active');
+                
+                // إغلاق النافذة
+                document.getElementById('closePaymentModal').addEventListener('click', closePaymentModal);
+                document.getElementById('cancelPaymentBtn').addEventListener('click', closePaymentModal);
+                
+                // منع إغلاق النافذة عند النقر خارجها
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        closePaymentModal();
+                    }
+                });
+            }
+            
+            // إغلاق نافذة الدفع
+            function closePaymentModal() {
+                document.getElementById('paymentModal').classList.remove('active');
+            }
+            
+            // تسجيل دفعة جديدة
+            document.getElementById('paymentForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const studentId = document.getElementById('paymentStudentId').value;
+                const amount = parseInt(document.getElementById('paymentAmount').value);
+                const date = document.getElementById('paymentDate').value;
+                const notes = document.getElementById('paymentNotes').value;
+                
+                const students = getStudents();
+                const student = students.find(s => s.id === studentId);
+                
+                if (!student) return;
+                
+                // إضافة الدفعة
+                const payments = getPayments();
+                const newPayment = {
+                    id: generateId(),
+                    studentId,
+                    amount,
+                    date,
+                    notes
+                };
+                
+                payments.push(newPayment);
+                savePayments(payments);
+                
+                // تحديث آخر تاريخ دفع للتلميذ
+                const studentIndex = students.findIndex(s => s.id === studentId);
+                if (studentIndex !== -1) {
+                    students[studentIndex].lastPaymentDate = date;
+                    saveStudents(students);
+                }
+                
+                addActivity(`تم تسجيل دفعة بقيمة ${amount.toLocaleString()} أوقية للتلميذ ${student.fullName}`, 'success');
+                showNotification('تم تسجيل الدفعة بنجاح', 'success');
+                
                 closePaymentModal();
-            }
-        });
-    }
-    
-    // إغلاق نافذة الدفع
-    function closePaymentModal() {
-        document.getElementById('paymentModal').classList.remove('active');
-    }
-    
-    // تسجيل دفعة جديدة
-    document.getElementById('paymentForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const studentId = document.getElementById('paymentStudentId').value;
-        const amount = parseInt(document.getElementById('paymentAmount').value);
-        const date = document.getElementById('paymentDate').value;
-        const notes = document.getElementById('paymentNotes').value;
-        
-        const students = getStudents();
-        const student = students.find(s => s.id === studentId);
-        
-        if (!student) return;
-        
-        // إضافة الدفعة
-        const payments = getPayments();
-        const newPayment = {
-            id: generateId(),
-            studentId,
-            amount,
-            date,
-            notes
-        };
-        
-        payments.push(newPayment);
-        savePayments(payments);
-        
-        // تحديث آخر تاريخ دفع للتلميذ
-        const studentIndex = students.findIndex(s => s.id === studentId);
-        if (studentIndex !== -1) {
-            students[studentIndex].lastPaymentDate = date;
-            saveStudents(students);
-        }
-        
-        addActivity(`تم تسجيل دفعة بقيمة ${amount.toLocaleString()} أوقية للتلميذ ${student.fullName}`, 'success');
-        showNotification('تم تسجيل الدفعة بنجاح', 'success');
-        
-        closePaymentModal();
-        
-        // إعادة تحميل الصفحة الحالية
-        if (document.getElementById('payments').classList.contains('active')) {
-            loadPayments();
-        }
-        
-        if (document.getElementById('students').classList.contains('active')) {
-            loadStudents();
-        }
-        
-        // تحديث لوحة التحكم
-        loadDashboard();
-    });
-    
-    // تحميل صفحة الحضور
-    function loadAttendance() {
-        const students = getStudents();
-        const attendanceList = document.getElementById('attendanceList');
-        const today = new Date().toISOString().split('T')[0];
-        
-        // الحصول على سجل الحضور لليوم
-        const attendanceRecords = getAttendance();
-        const todayAttendance = attendanceRecords.filter(record => 
-            record.date.startsWith(today)
-        );
-        
-        // عرض قائمة التلاميذ للحضور
-        function displayAttendance() {
-            attendanceList.innerHTML = '';
+                
+                // إعادة تحميل الصفحة الحالية
+                if (document.getElementById('payments').classList.contains('active')) {
+                    loadPayments();
+                }
+                
+                if (document.getElementById('students').classList.contains('active')) {
+                    loadStudents();
+                }
+                
+                // تحديث لوحة التحكم
+                loadDashboard();
+            });
             
-            if (students.length === 0) {
-                const emptyState = document.createElement('div');
-                emptyState.className = 'empty-state';
-                emptyState.innerHTML = `
-                    <i class="fas fa-users-slash"></i>
-                    <p>لا يوجد تلاميذ مسجلين بعد</p>
-                `;
-                attendanceList.appendChild(emptyState);
-                return;
-            }
-            
-            students.forEach(student => {
-                // البحث عن سجل الحضور للتلميذ لليوم
-                const studentAttendance = todayAttendance.find(record => 
-                    record.studentId === student.id
+            // تحميل صفحة الحضور
+            function loadAttendance() {
+                const students = getStudents();
+                const attendanceList = document.getElementById('attendanceList');
+                const today = new Date().toISOString().split('T')[0];
+                
+                // الحصول على سجل الحضور لليوم
+                const attendanceRecords = getAttendance();
+                const todayAttendance = attendanceRecords.filter(record => 
+                    record.date.startsWith(today)
                 );
                 
-                const isPresent = studentAttendance ? studentAttendance.status === 'present' : false;
+                // عرض قائمة التلاميذ للحضور
+                function displayAttendance() {
+                    attendanceList.innerHTML = '';
+                    
+                    if (students.length === 0) {
+                        const emptyState = document.createElement('div');
+                        emptyState.className = 'empty-state';
+                        emptyState.innerHTML = `
+                            <i class="fas fa-users-slash"></i>
+                            <p>لا يوجد تلاميذ مسجلين بعد</p>
+                        `;
+                        attendanceList.appendChild(emptyState);
+                        return;
+                    }
+                    
+                    students.forEach(student => {
+                        // البحث عن سجل الحضور للتلميذ لليوم
+                        const studentAttendance = todayAttendance.find(record => 
+                            record.studentId === student.id
+                        );
+                        
+                        const isPresent = studentAttendance ? studentAttendance.status === 'present' : false;
+                        
+                        const attendanceItem = document.createElement('div');
+                        attendanceItem.className = 'attendance-item';
+                        attendanceItem.innerHTML = `
+                            <div class="student-info">
+                                <h4>${student.fullName}</h4>
+                                <div class="student-details">
+                                    <span><i class="fas fa-home"></i> ${student.familyName}</span>
+                                    <span class="attendance-status ${isPresent ? 'present' : 'absent'}">
+                                        ${isPresent ? 'حاضر' : 'غائب'}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="attendance-actions">
+                                <button class="btn btn-success btn-sm mark-present" data-id="${student.id}" ${isPresent ? 'disabled' : ''}>
+                                    <i class="fas fa-check"></i> حضور
+                                </button>
+                                <button class="btn btn-danger btn-sm mark-absent" data-id="${student.id}" ${!isPresent ? 'disabled' : ''}>
+                                    <i class="fas fa-times"></i> غياب
+                                </button>
+                            </div>
+                        `;
+                        attendanceList.appendChild(attendanceItem);
+                    });
+                    
+                    // إضافة أحداث لأزرار الحضور
+                    document.querySelectorAll('.mark-present').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const studentId = this.getAttribute('data-id');
+                            markAttendance(studentId, 'present');
+                        });
+                    });
+                    
+                    document.querySelectorAll('.mark-absent').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const studentId = this.getAttribute('data-id');
+                            markAttendance(studentId, 'absent');
+                        });
+                    });
+                }
                 
-                const attendanceItem = document.createElement('div');
-                attendanceItem.className = 'attendance-item';
-                attendanceItem.innerHTML = `
-                    <div class="student-info">
-                        <h4>${student.fullName}</h4>
-                        <div class="student-details">
-                            <span><i class="fas fa-home"></i> ${student.familyName}</span>
-                            <span class="attendance-status ${isPresent ? 'present' : 'absent'}">
-                                ${isPresent ? 'حاضر' : 'غائب'}
-                            </span>
-                        </div>
-                    </div>
-                    <div class="attendance-actions">
-                        <button class="btn btn-success btn-sm mark-present" data-id="${student.id}" ${isPresent ? 'disabled' : ''}>
-                            <i class="fas fa-check"></i> حضور
-                        </button>
-                        <button class="btn btn-danger btn-sm mark-absent" data-id="${student.id}" ${!isPresent ? 'disabled' : ''}>
-                            <i class="fas fa-times"></i> غياب
-                        </button>
-                    </div>
-                `;
-                attendanceList.appendChild(attendanceItem);
-            });
-            
-            // إضافة أحداث لأزرار الحضور
-            document.querySelectorAll('.mark-present').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const studentId = this.getAttribute('data-id');
-                    markAttendance(studentId, 'present');
+                displayAttendance();
+                
+                // تسجيل حضور للجميع
+                document.getElementById('markAllPresent').addEventListener('click', function() {
+                    students.forEach(student => {
+                        markAttendance(student.id, 'present');
+                    });
+                    showNotification('تم تسجيل حضور جميع التلاميذ', 'success');
                 });
-            });
-            
-            document.querySelectorAll('.mark-absent').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const studentId = this.getAttribute('data-id');
-                    markAttendance(studentId, 'absent');
+                
+                // عرض سجل الحضور
+                document.getElementById('viewAttendanceHistory').addEventListener('click', function() {
+                    document.getElementById('attendanceList').style.display = 'none';
+                    document.getElementById('attendanceHistory').style.display = 'block';
+                    loadAttendanceHistory();
                 });
-            });
-        }
-        
-        displayAttendance();
-        
-        // تسجيل حضور للجميع
-        document.getElementById('markAllPresent').addEventListener('click', function() {
-            students.forEach(student => {
-                markAttendance(student.id, 'present');
-            });
-            showNotification('تم تسجيل حضور جميع التلاميذ', 'success');
-        });
-        
-        // عرض سجل الحضور
-        document.getElementById('viewAttendanceHistory').addEventListener('click', function() {
-            document.getElementById('attendanceList').style.display = 'none';
-            document.getElementById('attendanceHistory').style.display = 'block';
-            loadAttendanceHistory();
-        });
-        
-        // العودة للحضور اليومي
-        document.getElementById('backToAttendance').addEventListener('click', function() {
-            document.getElementById('attendanceList').style.display = 'block';
-            document.getElementById('attendanceHistory').style.display = 'none';
-        });
-    }
-    
-    // تسجيل الحضور
-    function markAttendance(studentId, status) {
-        const students = getStudents();
-        const student = students.find(s => s.id === studentId);
-        
-        if (!student) return;
-        
-        const today = new Date().toISOString().split('T')[0];
-        const now = new Date().toISOString();
-        
-        const attendanceRecords = getAttendance();
-        
-        // إزالة أي سجل حضور سابق للتلميذ لنفس اليوم
-        const filteredRecords = attendanceRecords.filter(record => 
-            !(record.studentId === studentId && record.date.startsWith(today))
-        );
-        
-        // إضافة سجل الحضور الجديد
-        const newRecord = {
-            id: generateId(),
-            studentId,
-            studentName: student.fullName,
-            date: now,
-            status
-        };
-        
-        filteredRecords.push(newRecord);
-        saveAttendance(filteredRecords);
-        
-        // إضافة نشاط
-        const statusText = status === 'present' ? 'حضور' : 'غياب';
-        addActivity(`تم تسجيل ${statusText} للتلميذ ${student.fullName}`, 'info');
-        
-        // إعادة تحميل قائمة الحضور
-        loadAttendance();
-    }
-    
-    // تحميل سجل الحضور
-    function loadAttendanceHistory() {
-        const attendanceRecords = getAttendance();
-        const historyList = document.getElementById('historyList');
-        
-        historyList.innerHTML = '';
-        
-        if (attendanceRecords.length === 0) {
-            historyList.innerHTML = '<div class="empty-state"><p>لا توجد سجلات حضور</p></div>';
-            return;
-        }
-        
-        // تجميع السجلات حسب التاريخ
-        const recordsByDate = {};
-        attendanceRecords.forEach(record => {
-            const date = new Date(record.date).toLocaleDateString('ar-MR');
-            if (!recordsByDate[date]) {
-                recordsByDate[date] = [];
+                
+                // العودة للحضور اليومي
+                document.getElementById('backToAttendance').addEventListener('click', function() {
+                    document.getElementById('attendanceList').style.display = 'block';
+                    document.getElementById('attendanceHistory').style.display = 'none';
+                });
             }
-            recordsByDate[date].push(record);
-        });
-        
-        // عرض السجلات المجمعة
-        Object.keys(recordsByDate).sort().reverse().forEach(date => {
-            const dateHeader = document.createElement('h4');
-            dateHeader.textContent = date;
-            dateHeader.style.marginTop = '1rem';
-            dateHeader.style.marginBottom = '0.5rem';
-            dateHeader.style.color = 'var(--primary-color)';
-            historyList.appendChild(dateHeader);
             
-            recordsByDate[date].forEach(record => {
-                const time = new Date(record.date).toLocaleTimeString('ar-MR', { hour: '2-digit', minute: '2-digit' });
-                const statusText = record.status === 'present' ? 'حاضر' : 'غائب';
-                const statusClass = record.status === 'present' ? 'present' : 'absent';
+            // تسجيل الحضور
+            function markAttendance(studentId, status) {
+                const students = getStudents();
+                const student = students.find(s => s.id === studentId);
                 
-                const recordItem = document.createElement('div');
-                recordItem.className = 'attendance-item';
-                recordItem.innerHTML = `
-                    <div class="student-info">
-                        <h4>${record.studentName}</h4>
-                        <div class="student-details">
-                            <span>${time}</span>
-                            <span class="attendance-status ${statusClass}">${statusText}</span>
-                        </div>
-                    </div>
-                `;
-                historyList.appendChild(recordItem);
-            });
+                if (!student) return;
+                
+                const today = new Date().toISOString().split('T')[0];
+                const now = new Date().toISOString();
+                
+                const attendanceRecords = getAttendance();
+                
+                // إزالة أي سجل حضور سابق للتلميذ لنفس اليوم
+                const filteredRecords = attendanceRecords.filter(record => 
+                    !(record.studentId === studentId && record.date.startsWith(today))
+                );
+                
+                // إضافة سجل الحضور الجديد
+                const newRecord = {
+                    id: generateId(),
+                    studentId,
+                    studentName: student.fullName,
+                    date: now,
+                    status
+                };
+                
+                filteredRecords.push(newRecord);
+                saveAttendance(filteredRecords);
+                
+                // إضافة نشاط
+                const statusText = status === 'present' ? 'حضور' : 'غياب';
+                addActivity(`تم تسجيل ${statusText} للتلميذ ${student.fullName}`, 'info');
+                
+                // إعادة تحميل قائمة الحضور
+                loadAttendance();
+            }
+            
+            // تحميل سجل الحضور
+            function loadAttendanceHistory() {
+                const attendanceRecords = getAttendance();
+                const historyList = document.getElementById('historyList');
+                
+                historyList.innerHTML = '';
+                
+                if (attendanceRecords.length === 0) {
+                    historyList.innerHTML = '<div class="empty-state"><p>لا توجد سجلات حضور</p></div>';
+                    return;
+                }
+                
+                // تجميع السجلات حسب التاريخ
+                const recordsByDate = {};
+                attendanceRecords.forEach(record => {
+                    const date = new Date(record.date).toLocaleDateString('ar-MR');
+                    if (!recordsByDate[date]) {
+                        recordsByDate[date] = [];
+                    }
+                    recordsByDate[date].push(record);
+                });
+                
+                // عرض السجلات المجمعة
+                Object.keys(recordsByDate).sort().reverse().forEach(date => {
+                    const dateHeader = document.createElement('h4');
+                    dateHeader.textContent = date;
+                    dateHeader.style.marginTop = '1rem';
+                    dateHeader.style.marginBottom = '0.5rem';
+                    dateHeader.style.color = 'var(--primary-color)';
+                    historyList.appendChild(dateHeader);
+                    
+                    recordsByDate[date].forEach(record => {
+                        const time = new Date(record.date).toLocaleTimeString('ar-MR', { hour: '2-digit', minute: '2-digit' });
+                        const statusText = record.status === 'present' ? 'حاضر' : 'غائب';
+                        const statusClass = record.status === 'present' ? 'present' : 'absent';
+                        
+                        const recordItem = document.createElement('div');
+                        recordItem.className = 'attendance-item';
+                        recordItem.innerHTML = `
+                            <div class="student-info">
+                                <h4>${record.studentName}</h4>
+                                <div class="student-details">
+                                    <span>${time}</span>
+                                    <span class="attendance-status ${statusClass}">${statusText}</span>
+                                </div>
+                            </div>
+                        `;
+                        historyList.appendChild(recordItem);
+                    });
+                });
+            }
+            
+            // عرض الإشعارات
+            function showNotification(message, type = 'success') {
+                const notification = document.getElementById('notification');
+                notification.textContent = message;
+                notification.className = 'notification active';
+                notification.classList.add(type);
+                
+                setTimeout(() => {
+                    notification.classList.remove('active');
+                    notification.classList.remove(type);
+                }, 3000);
+            }
         });
-    }
-    
-    // عرض الإشعارات
-    function showNotification(message, type = 'success') {
-        const notification = document.getElementById('notification');
-        notification.textContent = message;
-        notification.className = 'notification active';
-        notification.classList.add(type);
-        
-        setTimeout(() => {
-            notification.classList.remove('active');
-            notification.classList.remove(type);
-        }, 3000);
-    }
-});
+    </script>
+</body>
+</html>
